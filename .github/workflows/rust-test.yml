@@ -1,0 +1,42 @@
+name: Rust Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    strategy:
+      fail-fast: true
+      matrix:
+        platform:
+          - target: x86_64-unknown-linux-musl
+            runs-on: ubuntu-latest
+          - target: aarch64-unknown-linux-musl
+            runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform.runs-on }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Install Rust
+        run: rustup toolchain install stable --component llvm-tools-preview
+
+      - name: Check code format
+        run: cargo fmt -- --check
+      - name: Check the package for errors
+        run: cargo check --all
+      - name: Lint rust sources
+        run: cargo clippy --all-targets --tests --benches -- -D warnings
+      - name: Execute rust tests
+        run: cargo nextest run --no-tests pass
