@@ -3,8 +3,8 @@ use alloy::{
     signers::{aws::AwsSignerError, gcp::GcpSignerError, local::LocalSignerError},
 };
 use axum::{
-    response::{IntoResponse, Response},
     Json,
+    response::{IntoResponse, Response},
 };
 use serde::Serialize;
 use thiserror::Error;

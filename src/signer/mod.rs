@@ -8,12 +8,12 @@ use alloy::{
     signers::{
         aws::AwsSigner,
         gcp::{GcpKeyRingRef, GcpSigner, KeySpecifier},
-        local::{coins_bip39::English, LocalSigner, MnemonicBuilder, PrivateKeySigner},
+        local::{LocalSigner, MnemonicBuilder, PrivateKeySigner, coins_bip39::English},
     },
 };
 
 use gcloud_sdk::{
-    google::cloud::kms::v1::key_management_service_client::KeyManagementServiceClient, GoogleApi,
+    GoogleApi, google::cloud::kms::v1::key_management_service_client::KeyManagementServiceClient,
 };
 
 impl SignerConfig {

@@ -12,9 +12,9 @@ use alloy::{
 use tracing::info;
 
 use axum::{
+    Router,
     extract::{Json, State},
     routing::{get, post},
-    Router,
 };
 use serde::{Deserialize, Serialize};
 
