@@ -8,6 +8,14 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - README.md
+      - .github/workflows/docker-build.yaml
+      - .github/dependabot.yml
+      - .pre-commit-config.yaml
+      - deny.toml
+      - .gitignore
+      - .cursor/*
 
 permissions:
   contents: read

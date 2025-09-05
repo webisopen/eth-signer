@@ -1,97 +1,97 @@
 # ETH Signer
 
-一个基于 Rust 的以太坊交易签名服务，支持多种签名方式，包括私钥、助记词、密钥库以及云服务商 KMS（AWS KMS、Google Cloud KMS）。
+A Rust-based Ethereum transaction signing service that supports multiple signing methods, including private keys, mnemonics, keystores, and cloud KMS services (AWS KMS, Google Cloud KMS).
 
-## 功能特性
+## Features
 
-- 🔐 **多种签名方式支持**
+- 🔐 **Multiple Signing Methods**
 
-  - 私钥签名
-  - 助记词签名
-  - 密钥库文件签名
-  - AWS KMS 签名
-  - Google Cloud KMS 签名
-  - Azure Key Vault 签名（计划中）
-  - 阿里云 KMS 签名（计划中）
+  - Private key signing
+  - Mnemonic phrase signing
+  - Keystore file signing
+  - AWS KMS signing
+  - Google Cloud KMS signing
+  - Azure Key Vault signing (planned)
+  - Alibaba Cloud KMS signing (planned)
 
-- 🚀 **高性能 Web 服务**
+- 🚀 **High-Performance Web Service**
 
-  - 基于 Axum 异步框架
-  - 支持 JSON-RPC 接口
-  - 健康检查端点
-  - 结构化日志记录
+  - Built on Axum async framework
+  - JSON-RPC interface support
+  - Health check endpoint
+  - Structured logging
 
-- 🐳 **容器化部署**
-  - Docker 镜像支持
-  - 多阶段构建优化
-  - 最小化运行时镜像
+- 🐳 **Containerized Deployment**
+  - Docker image support
+  - Multi-stage build optimization
+  - Minimal runtime image
 
-## 快速开始
+## Quick Start
 
-### 环境要求
+### Prerequisites
 
 - Rust 1.89.0+
-- Docker（可选）
+- Docker (optional)
 
-### 安装和运行
+### Installation and Running
 
-1. **克隆项目**
+1. **Clone the repository**
 
 ```bash
 git clone <repository-url>
 cd eth-signer
 ```
 
-2. **配置环境变量**
+2. **Configure environment variables**
 
 ```bash
-# 选择签名方式并设置相应环境变量
+# Choose signing method and set corresponding environment variables
 export SIGNER_TYPE=private_key
 export SIGNER_PRIVATE_KEY=your_private_key_here
 ```
 
-3. **运行服务**
+3. **Run the service**
 
 ```bash
-# 开发模式
+# Development mode
 cargo run
 
-# 发布模式
+# Release mode
 cargo run --release
 ```
 
-### Docker 部署
+### Docker Deployment
 
 ```bash
-# 构建镜像
+# Build image
 docker build -t eth-signer .
 
-# 运行容器
+# Run container
 docker run -p 8000:8000 \
   -e SIGNER_TYPE=private_key \
   -e SIGNER_PRIVATE_KEY=your_private_key_here \
   eth-signer
 ```
 
-## 配置
+## Configuration
 
-### 支持的签名类型
+### Supported Signing Types
 
-#### 1. 私钥签名
+#### 1. Private Key Signing
 
 ```bash
 export SIGNER_TYPE=private_key
 export SIGNER_PRIVATE_KEY=0x1234567890abcdef...
 ```
 
-#### 2. 助记词签名
+#### 2. Mnemonic Phrase Signing
 
 ```bash
 export SIGNER_TYPE=mnemonic
 export SIGNER_MNEMONIC="word1 word2 word3 ... word12"
 ```
 
-#### 3. 密钥库文件签名
+#### 3. Keystore File Signing
 
 ```bash
 export SIGNER_TYPE=keystore
@@ -99,15 +99,15 @@ export SIGNER_KEYSTORE_PATH=/path/to/keystore.json
 export SIGNER_KEYSTORE_PASSWORD=your_password
 ```
 
-#### 4. AWS KMS 签名
+#### 4. AWS KMS Signing
 
 ```bash
 export SIGNER_TYPE=awskms
 export SIGNER_AWSKMS_KEY=arn:aws:kms:region:account:key/key-id
-# AWS 凭证通过环境变量或 IAM 角色自动获取
+# AWS credentials are automatically obtained via environment variables or IAM roles
 ```
 
-#### 5. Google Cloud KMS 签名
+#### 5. Google Cloud KMS Signing
 
 ```bash
 export SIGNER_TYPE=gcpkms
@@ -116,33 +116,33 @@ export SIGNER_GCPKMS_LOCATION=global
 export SIGNER_GCPKMS_KEY_RING=your-key-ring
 export SIGNER_GCPKMS_KEY=your-key-name
 export SIGNER_GCPKMS_VERSION=1
-# Google Cloud 凭证通过环境变量或服务账号自动获取
+# Google Cloud credentials are automatically obtained via environment variables or service accounts
 ```
 
-### 其他配置选项
+### Other Configuration Options
 
-- `PORT`: 服务端口（默认：8000）
-- `RUST_LOG`: 日志级别（默认：debug）
+- `PORT`: Service port (default: 8000)
+- `RUST_LOG`: Log level (default: debug)
 
-## API 接口
+## API Reference
 
-### 健康检查
+### Health Check
 
 ```http
 GET /healthz
 ```
 
-返回：`OK`
+Returns: `OK`
 
-### 获取公钥地址
+### Get Public Key Address
 
 ```http
 GET /pub
 ```
 
-返回：签名者的以太坊地址
+Returns: The signer's Ethereum address
 
-### 签名交易
+### Sign Transaction
 
 ```http
 POST /
@@ -165,7 +165,7 @@ Content-Type: application/json
 }
 ```
 
-返回：
+Response:
 
 ```json
 {
@@ -175,65 +175,65 @@ Content-Type: application/json
 }
 ```
 
-## 开发
+## Development
 
-### 项目结构
+### Project Structure
 
 ```
 src/
-├── main.rs          # 主程序入口
-├── config.rs        # 命令行参数和配置
-├── error.rs         # 错误定义
-├── prelude.rs       # 公共导入
-├── route.rs         # HTTP 路由处理
-└── signer/          # 签名器模块
-    ├── mod.rs       # 签名器实现
-    └── config.rs    # 签名器配置
+├── main.rs          # Main program entry point
+├── config.rs        # Command line arguments and configuration
+├── error.rs         # Error definitions
+├── prelude.rs       # Common imports
+├── route.rs         # HTTP route handlers
+└── signer/          # Signer module
+    ├── mod.rs       # Signer implementation
+    └── config.rs    # Signer configuration
 ```
 
-### 构建和测试
+### Build and Test
 
 ```bash
-# 构建项目
+# Build the project
 cargo build
 
-# 运行测试
+# Run tests
 cargo test
 
-# 代码格式化
+# Format code
 cargo fmt
 
-# 代码检查
+# Lint code
 cargo clippy
 ```
 
-### 添加新的签名方式
+### Adding New Signing Methods
 
-1. 在 `src/signer/config.rs` 中添加新的配置变体
-2. 在 `src/config.rs` 中添加相应的命令行参数
-3. 在 `src/signer/mod.rs` 的 `signer()` 方法中实现签名器创建逻辑
+1. Add new configuration variant in `src/signer/config.rs`
+2. Add corresponding command line arguments in `src/config.rs`
+3. Implement signer creation logic in the `signer()` method in `src/signer/mod.rs`
 
-## 安全注意事项
+## Security Considerations
 
-- 🔒 **私钥安全**：私钥和助记词应通过环境变量传递，避免在代码中硬编码
-- 🔐 **密钥库密码**：密钥库密码应通过安全的方式传递
-- ☁️ **云服务权限**：使用云 KMS 时，确保最小权限原则
-- 🌐 **网络安全**：生产环境中应使用 HTTPS 和适当的网络隔离
+- 🔒 **Private Key Security**: Private keys and mnemonics should be passed via environment variables, avoid hardcoding in code
+- 🔐 **Keystore Passwords**: Keystore passwords should be passed securely
+- ☁️ **Cloud Service Permissions**: When using cloud KMS, ensure the principle of least privilege
+- 🌐 **Network Security**: Use HTTPS and appropriate network isolation in production environments
 
-## 许可证
+## License
 
-本项目采用 [MIT 许可证](LICENSE)。
+This project is licensed under the [MIT License](LICENSE).
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request！
+Issues and Pull Requests are welcome!
 
-## 更新日志
+## Changelog
 
 ### v0.1.0
 
-- 初始版本发布
-- 支持私钥、助记词、密钥库签名
-- 支持 AWS KMS 和 Google Cloud KMS
-- 提供 JSON-RPC 接口
-- 容器化部署支持
+- Initial release
+- Support for private key, mnemonic, and keystore signing
+- Support for AWS KMS and Google Cloud KMS
+- JSON-RPC interface
+- Containerized deployment support
