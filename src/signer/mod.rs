@@ -42,7 +42,7 @@ impl SignerConfig {
                 key,
                 version,
             } => {
-                let keyring_ref = GcpKeyRingRef::new(&project_id, &location, &key_ring);
+                let keyring_ref = GcpKeyRingRef::new(project_id, location, key_ring);
 
                 let client = GoogleApi::from_function(
                     KeyManagementServiceClient::new,
@@ -72,7 +72,7 @@ impl SignerConfig {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    // use super::*;
 
     // #[test]
     // fn test_rlp() {

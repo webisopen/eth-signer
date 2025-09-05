@@ -12,22 +12,22 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {
     #[error(transparent)]
-    SignerError(#[from] alloy::signers::Error),
+    AlloySigner(#[from] alloy::signers::Error),
 
     #[error(transparent)]
-    LocalSignerError(#[from] LocalSignerError),
+    AlloyLocalSigner(#[from] LocalSignerError),
 
     #[error(transparent)]
-    AwsSignerError(#[from] AwsSignerError),
+    AwsSigner(#[from] AwsSignerError),
 
     #[error(transparent)]
-    GcpSignerError(#[from] GcpSignerError),
+    GcpSigner(#[from] GcpSignerError),
 
     #[error(transparent)]
-    GcloudSDKError(#[from] gcloud_sdk::error::Error),
+    GcloudSDK(#[from] gcloud_sdk::error::Error),
 
     #[error(transparent)]
-    TransactionBuilderError(#[from] alloy::network::TransactionBuilderError<Ethereum>),
+    TransactionBuilder(#[from] alloy::network::TransactionBuilderError<Ethereum>),
 
     #[error("Invalid signer type '{0}'")]
     InvalidSignerType(String),

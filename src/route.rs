@@ -66,7 +66,7 @@ async fn sign(
     };
 
     if method != "eth_signTransaction" {
-        return Err(Error::InvalidRpcMethod(method)).map_err(rpc_err_map);
+        return Err(rpc_err_map(Error::InvalidRpcMethod(method)));
     }
 
     let mut req_hash = DefaultHasher::new();
@@ -76,7 +76,7 @@ async fn sign(
     let tx_envelop = request
         .build(&wallet)
         .await
-        .map_err(Error::TransactionBuilderError)
+        .map_err(Error::TransactionBuilder)
         .map_err(rpc_err_map)?;
 
     let mut tx_hash = DefaultHasher::new();
