@@ -40,6 +40,15 @@ jobs:
       - name: Install Rust
         run: rustup toolchain install stable --component llvm-tools-preview
 
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: install nextest
+        uses: taiki-e/install-action@nextest
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Install dependencies
+        run: cargo fetch --locked
+
       - name: Check code format
         run: cargo fmt -- --check
       - name: Check the package for errors
