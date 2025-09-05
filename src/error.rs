@@ -18,10 +18,10 @@ pub enum Error {
     AlloyLocalSigner(#[from] LocalSignerError),
 
     #[error(transparent)]
-    AwsSigner(#[from] AwsSignerError),
+    AwsSigner(#[from] Box<AwsSignerError>),
 
     #[error(transparent)]
-    GcpSigner(#[from] GcpSignerError),
+    GcpSigner(#[from] Box<GcpSignerError>),
 
     #[error(transparent)]
     GcloudSDK(#[from] gcloud_sdk::error::Error),

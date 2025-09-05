@@ -33,7 +33,11 @@ impl SignerConfig {
             SignerConfig::AwsKms { key } => {
                 let config = aws_config::load_defaults(aws_config::BehaviorVersion::latest()).await;
                 let client = aws_sdk_kms::Client::new(&config);
-                Box::new(AwsSigner::new(client, key.clone(), Some(1)).await?)
+                Box::new(
+                    AwsSigner::new(client, key.clone(), Some(1))
+                        .await
+                        .map_err(Box::new)?,
+                )
             }
             Self::GoogleKms {
                 project_id,
@@ -52,7 +56,11 @@ impl SignerConfig {
                 .await?;
                 let key_specifier = KeySpecifier::new(keyring_ref, key, *version);
 
-                Box::new(GcpSigner::new(client, key_specifier, None).await?)
+                Box::new(
+                    GcpSigner::new(client, key_specifier, None)
+                        .await
+                        .map_err(Box::new)?,
+                )
             }
             _ => unimplemented!(),
         };
