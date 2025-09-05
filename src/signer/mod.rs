@@ -4,23 +4,23 @@ pub use config::SignerConfig;
 use crate::prelude::*;
 use alloy::{
     network::{EthereumWallet, TxSigner},
-    primitives::{Address, PrimitiveSignature},
+    primitives::{Address, Signature},
     signers::{
-        aws::AwsSigner,
-        gcp::{GcpKeyRingRef, GcpSigner, KeySpecifier},
+        aws::{AwsSigner, aws_sdk_kms},
+        gcp::{
+            GcpKeyRingRef, GcpSigner, KeySpecifier,
+            gcloud_sdk::{
+                GoogleApi,
+                google::cloud::kms::v1::key_management_service_client::KeyManagementServiceClient,
+            },
+        },
         local::{LocalSigner, MnemonicBuilder, PrivateKeySigner, coins_bip39::English},
     },
 };
 
-use gcloud_sdk::{
-    GoogleApi, google::cloud::kms::v1::key_management_service_client::KeyManagementServiceClient,
-};
-
 impl SignerConfig {
-    async fn signer(
-        &self,
-    ) -> Result<Box<dyn TxSigner<PrimitiveSignature> + Send + Sync + 'static>> {
-        let signer: Box<dyn TxSigner<PrimitiveSignature> + Send + Sync + 'static> = match self {
+    async fn signer(&self) -> Result<Box<dyn TxSigner<Signature> + Send + Sync + 'static>> {
+        let signer: Box<dyn TxSigner<Signature> + Send + Sync + 'static> = match self {
             SignerConfig::PrivateKey(key) => Box::new(key.parse::<PrivateKeySigner>()?),
             SignerConfig::Mnemonic(mnemonic) => Box::new(
                 MnemonicBuilder::<English>::default()
