@@ -1,0 +1,39 @@
+---
+globs: src/**/*.rs
+alwaysApply: false
+---
+
+# Ethereum signer best practices
+
+## Program Structure
+
+- Structure programs using `alloy` and `axum` framework.
+- Place program entrypoint logic in `lib.rs`, not `main.rs`
+- Separate state definitions, errors, instructions, and utils
+
+## Alloy Framework
+
+- Utilize the `alloy` macro system for derive macros for traits like `TxSigner`, `Wallet`
+- Use `alloy::primitives` for basic types like `Address`, `B256`, and `U256` to ensure type safety and correctness.
+- Implement the `alloy::signer::TxSigner` trait for custom signer types.
+- Program not directly interact with Ethereum rpc.
+
+### Alloy TxSigner Traits
+
+- Implement function `address` to return the address of the signer.
+- Implement function `sign_transaction` to sign a transaction.
+
+## Axum Framework
+
+- Use `axum` framework for web server.
+- Use `axum-jrpc` for implement [eth_signtransaction](https://ethereum.org/zh/developers/docs/apis/json-rpc/#eth_signtransaction) rpc method.
+- Use `State` to store the signer config.
+
+## Secure Key Management
+
+- Do not hardcode private keys or mnemonic in the program. Also for Cloud API keys(like AWS or GCP)
+- Implement robust error handling to gracefully manage failures in key retrieval, signing, or communication with external services like AWS or GCP.
+
+## Cloud Signers
+
+- Use the official SDKs for AWS and GCP to interact with their key management services.
