@@ -1,0 +1,41 @@
+version: 2
+updates:
+  # Rust 依赖检测
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "rust"
+    allow:
+      - dependency-type: "all"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
