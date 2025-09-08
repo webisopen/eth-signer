@@ -16,6 +16,9 @@ pub struct SignerOpts {
     #[arg(short, long, default_value_t = DEBUG)]
     pub debug: bool,
 
+    #[arg(long, env = "OTEL_EXPORTER_OTLP_ENDPOINT")]
+    otel_exporter_otlp_endpoint: Option<String>,
+
     #[arg(name = "type", short = 't', long, env = "SIGNER_TYPE")]
     _type: String,
 

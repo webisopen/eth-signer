@@ -19,7 +19,8 @@ A Rust-based Ethereum transaction signing service that supports multiple signing
   - Built on Axum async framework
   - JSON-RPC interface support
   - Health check endpoint
-  - Structured logging
+  - Structured logging with OpenTelemetry support
+  - Distributed tracing and metrics
 
 - 🐳 **Containerized Deployment**
   - Docker image support
@@ -54,10 +55,10 @@ export SIGNER_PRIVATE_KEY=your_private_key_here
 
 ```bash
 # Development mode
-cargo run
+cargo run -p eth-signer
 
 # Release mode
-cargo run --release
+cargo run --release -p eth-signer
 ```
 
 ### Docker Deployment
@@ -154,12 +155,16 @@ Content-Type: application/json
   "method": "eth_signTransaction",
   "params": [
     {
-      "from": "0x...",
-      "to": "0x...",
-      "value": "0x0",
-      "gas": "0x5208",
-      "gasPrice": "0x3b9aca00",
-      "data": "0x..."
+      "from": "0xbb48b4d059D901F0CE1325d1A37f9E14C6634499",
+      "to": "0xbb48b4d059D901F0CE1325d1A37f9E14C6634499",
+      "gas": "0x3",
+      "gasPrice": "0x1",
+      "maxFeePerGas": "0x1",
+      "maxPriorityFeePerGas": "0x1",
+      "value": "0x1",
+      "nonce": "0xd",
+      "data": "0x010203",
+      "chainId": "0x0"
     }
   ]
 }
@@ -179,26 +184,40 @@ Response:
 
 ### Project Structure
 
-```
-src/
-├── main.rs          # Main program entry point
-├── config.rs        # Command line arguments and configuration
-├── error.rs         # Error definitions
-├── prelude.rs       # Common imports
-├── route.rs         # HTTP route handlers
-└── signer/          # Signer module
-    ├── mod.rs       # Signer implementation
-    └── config.rs    # Signer configuration
+```text
+eth-signer/
+├── Cargo.toml       # Workspace configuration
+├── crates/
+│   └── eth-signer/  # Main application crate
+│       ├── Cargo.toml
+│       └── src/
+│           ├── main.rs          # Main program entry point
+│           ├── config.rs        # Command line arguments and configuration
+│           ├── error.rs         # Error definitions
+│           ├── otel.rs          # OpenTelemetry configuration
+│           ├── prelude.rs       # Common imports
+│           ├── route.rs         # HTTP route handlers
+│           └── signer/          # Signer module
+│               ├── mod.rs       # Signer implementation
+│               └── config.rs    # Signer configuration
+├── Dockerfile       # Container configuration
+└── README.md        # This file
 ```
 
 ### Build and Test
 
 ```bash
-# Build the project
+# Build the project (from workspace root)
 cargo build
+
+# Build specific crate
+cargo build -p eth-signer
 
 # Run tests
 cargo test
+
+# Run the application
+cargo run -p eth-signer
 
 # Format code
 cargo fmt
@@ -209,9 +228,9 @@ cargo clippy
 
 ### Adding New Signing Methods
 
-1. Add new configuration variant in `src/signer/config.rs`
-2. Add corresponding command line arguments in `src/config.rs`
-3. Implement signer creation logic in the `signer()` method in `src/signer/mod.rs`
+1. Add new configuration variant in `crates/eth-signer/src/signer/config.rs`
+2. Add corresponding command line arguments in `crates/eth-signer/src/config.rs`
+3. Implement signer creation logic in the `signer()` method in `crates/eth-signer/src/signer/mod.rs`
 
 ## Security Considerations
 

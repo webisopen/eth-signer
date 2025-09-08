@@ -1,22 +1,36 @@
-[package]
-name = "eth-signer"
-version = "0.1.0"
-edition = "2024"
+[workspace]
+members = ["crates/*"]
+resolver = "3"
 
-[dependencies]
-aws-config = "1.5"
+[workspace.dependencies]
 axum = { version = "0.8", features = ["macros"] }
 clap = { version = "4.5", features = ["derive", "env"] }
 dotenvy = "^0.15.0"
-eyre = "0.6"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "2"
 tokio = { version = "1.0", features = ["full"] }
+
+# opentelemetry dependencies
+opentelemetry = { version = "0.30", features = ["trace", "metrics", "logs"] }
+opentelemetry-otlp = { version = "0.30", features = [
+    "http-proto",
+    "trace",
+    "metrics",
+    "logs",
+] }
+opentelemetry_sdk = { version = "0.30", features = [
+    "trace",
+    "metrics",
+    "logs",
+] }
+opentelemetry-appender-tracing = { version = "0.30" }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-opentelemetry = "0.31"
 
-[dependencies.alloy]
+
+[workspace.dependencies.alloy]
 version = "1"
 features = [
     "full",
@@ -25,4 +39,5 @@ features = [
     "signer-mnemonic",
     "signer-aws",
     "signer-gcp",
+    "json-rpc",
 ]

@@ -1,32 +1,25 @@
 mod config;
 mod error;
+mod otel;
 mod prelude;
 mod route;
 mod signer;
 
-use axum::Router;
+use axum::{
+    Router,
+    extract::{MatchedPath, Request},
+};
 use clap::Parser;
 use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tokio::signal;
-
-use tracing_subscriber::{self, layer::SubscriberExt, util::SubscriberInitExt};
+use tower_http::trace::TraceLayer;
 
 #[tokio::main]
 async fn main() -> prelude::Result<()> {
     let args = config::SignerOpts::parse();
 
-    let subscriber = tracing_subscriber::registry().with(
-        tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "debug".into()),
-    );
-
-    if args.debug {
-        subscriber.with(tracing_subscriber::fmt::layer()).init();
-    } else {
-        subscriber
-            .with(tracing_subscriber::fmt::layer().json().flatten_event(true))
-            .init();
-    }
+    otel::init(args.debug);
 
     let port = std::env::var("PORT")
         .ok()
@@ -38,9 +31,23 @@ async fn main() -> prelude::Result<()> {
     tracing::info!("listening on {}", addr);
 
     let signer_config: signer::SignerConfig = args.try_into()?;
+    tracing::info!("signer config: {:?}", signer_config);
 
     let routes = route::routes(signer_config.clone());
-    let app = Router::new().merge(routes);
+    let app = Router::new().merge(routes).layer(
+        TraceLayer::new_for_http()
+            .make_span_with(|req: &Request| {
+                let method = req.method();
+                let uri = req.uri();
+                // axum automatically adds this extension.
+                let matched_path = req
+                    .extensions()
+                    .get::<MatchedPath>()
+                    .map(|matched_path| matched_path.as_str());
+                tracing::debug_span!("request", %method, %uri, matched_path)
+            })
+            .on_failure(()),
+    );
 
     axum::serve(
         lisenter,

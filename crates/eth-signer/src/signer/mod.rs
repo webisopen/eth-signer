@@ -6,7 +6,7 @@ use alloy::{
     network::{EthereumWallet, TxSigner},
     primitives::{Address, Signature},
     signers::{
-        aws::{AwsSigner, aws_sdk_kms},
+        aws::{AwsSigner, aws_config, aws_sdk_kms},
         gcp::{
             GcpKeyRingRef, GcpSigner, KeySpecifier,
             gcloud_sdk::{
@@ -80,11 +80,29 @@ impl SignerConfig {
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
 
-    // #[test]
-    // fn test_rlp() {
-    //     let rlp = "0xa3f20717a250c2b0b729b7e5becbff67fdaef7e0699da4de7ca5895b02a170a12d887fd3b17bfdce3481f10bea41f45ba9f709d39ce8325427b57afcfc994cee1b";
-    //     let tx = TypedTransaction::
-    // }
+    use super::*;
+
+    #[test]
+    fn parase_private_key() {
+        let s = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2";
+        let signer = s.parse::<PrivateKeySigner>().unwrap();
+        assert_eq!(
+            format!("{}", signer.address()),
+            "0xbb48b4d059D901F0CE1325d1A37f9E14C6634499"
+        );
+    }
+
+    #[test]
+    fn parse_mnemonic() {
+        let s = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+        let signer = MnemonicBuilder::<English>::default()
+            .phrase(s)
+            .build()
+            .unwrap();
+        assert_eq!(
+            format!("{}", signer.address()),
+            "0x9858EfFD232B4033E47d90003D41EC34EcaEda94"
+        );
+    }
 }

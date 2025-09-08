@@ -1,0 +1,25 @@
+[package]
+name = "eth-signer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+alloy = { workspace = true }
+
+clap = { workspace = true }
+dotenvy = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+
+axum = { workspace = true }
+tokio = { workspace = true }
+tower-http = { version = "^0.6", features = ["trace", "cors"] }
+
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-opentelemetry = { workspace = true }
+opentelemetry = { workspace = true }
+opentelemetry-otlp = { workspace = true }
+opentelemetry_sdk = { workspace = true }
+opentelemetry-appender-tracing = { workspace = true }
