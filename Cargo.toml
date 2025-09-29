@@ -24,7 +24,7 @@ opentelemetry_sdk = { version = "0.30", features = [
     "metrics",
     "logs",
 ] }
-opentelemetry-appender-tracing = { version = "0.30" }
+opentelemetry-appender-tracing = { version = "0.31" }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 tracing-opentelemetry = "0.31"
