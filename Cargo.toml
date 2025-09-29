@@ -19,7 +19,7 @@ opentelemetry-otlp = { version = "0.30", features = [
     "metrics",
     "logs",
 ] }
-opentelemetry_sdk = { version = "0.30", features = [
+opentelemetry_sdk = { version = "0.31", features = [
     "trace",
     "metrics",
     "logs",
