@@ -27,7 +27,7 @@ opentelemetry_sdk = { version = "0.30", features = [
 opentelemetry-appender-tracing = { version = "0.30" }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
-tracing-opentelemetry = "0.31"
+tracing-opentelemetry = "0.32"
 
 
 [workspace.dependencies.alloy]
