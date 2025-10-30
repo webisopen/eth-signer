@@ -106,7 +106,7 @@ async fn rpc(
             id: meta.id.clone(),
             payload: ResponsePayload::Success(*Box::new(
                 serde_json::value::RawValue::from_string(
-                    serde_json::to_string(&"OK").expect("failed to serialize"),
+                    serde_json::to_string(&"ok").expect("failed to serialize"),
                 )
                 .expect("failed to create raw value"),
             )),
