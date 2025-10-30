@@ -21,6 +21,9 @@ use axum::{
 };
 
 const SIGN_TX_METHOD: &str = "eth_signTransaction";
+const HEALTH_STATUS: &str = "health_status";
+
+type Params = Vec<Box<serde_json::value::RawValue>>;
 
 async fn pub_key(config: State<SignerConfig>) -> Result<String> {
     let addr = config.address().await?;
@@ -29,7 +32,7 @@ async fn pub_key(config: State<SignerConfig>) -> Result<String> {
 
 async fn rpc_request(
     config: State<SignerConfig>,
-    Json(request): Json<JrpcRequest<[TransactionRequest; 1]>>,
+    Json(request): Json<JrpcRequest<Params>>,
 ) -> impl IntoResponse {
     let response = rpc(config, request).await;
     if response.is_success() {
@@ -44,29 +47,50 @@ async fn rpc_request(
 
 async fn rpc(
     config: State<SignerConfig>,
-    JrpcRequest { meta, params }: JrpcRequest<[TransactionRequest; 1]>,
+    JrpcRequest { meta, params }: JrpcRequest<Params>,
 ) -> JrpcResponse {
     let span = tracing::debug_span!("rpc", method = %meta.method, id = %meta.id);
     let _guard = span.enter();
-    if meta.method != SIGN_TX_METHOD {
-        tracing::error!("invalid method");
-        return JrpcResponse::method_not_found(meta.id);
-    }
 
-    let Some(request) = params.first() else {
-        tracing::error!("invalid params");
-        return JrpcResponse::invalid_params(meta.id);
-    };
+    match meta.method.as_ref() {
+        SIGN_TX_METHOD => {
+            let Some(raw) = params.first() else {
+                tracing::error!("invalid params");
+                return JrpcResponse::invalid_params(meta.id.clone());
+            };
 
-    JrpcResponse {
-        id: meta.id,
-        payload: match sign(config, request.clone()).await {
-            Ok(result) => ResponsePayload::Success(result),
-            Err(e) => {
-                tracing::error!("sign error: {}", e);
-                ResponsePayload::Failure(e.into())
+            let request: TransactionRequest = match serde_json::from_str(raw.get()) {
+                Ok(req) => req,
+                Err(e) => {
+                    tracing::error!("invalid params, deserialize error: {}", e);
+                    return JrpcResponse::invalid_params(meta.id.clone());
+                }
+            };
+
+            JrpcResponse {
+                id: meta.id,
+                payload: match sign(config, request).await {
+                    Ok(result) => ResponsePayload::Success(result),
+                    Err(e) => {
+                        tracing::error!("sign error: {}", e);
+                        ResponsePayload::Failure(e.into())
+                    }
+                },
             }
+        }
+        HEALTH_STATUS => JrpcResponse {
+            id: meta.id.clone(),
+            payload: ResponsePayload::Success(*Box::new(
+                serde_json::value::RawValue::from_string(
+                    serde_json::to_string(&"OK").expect("failed to serialize"),
+                )
+                .expect("failed to create raw value"),
+            )),
         },
+        _ => {
+            tracing::error!("invalid method");
+            JrpcResponse::method_not_found(meta.id.clone())
+        }
     }
 }
 
