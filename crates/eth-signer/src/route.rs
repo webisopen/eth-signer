@@ -11,10 +11,12 @@ use alloy::{
         types::{TransactionInput, TransactionRequest},
     },
 };
+use serde_json::Value;
 use tracing::info;
 
 use axum::{
     Router,
+    body::Bytes,
     extract::{Json, State},
     response::IntoResponse,
     routing::{get, post},
@@ -30,10 +32,32 @@ async fn pub_key(config: State<SignerConfig>) -> Result<String> {
     Ok(addr.to_string())
 }
 
-async fn rpc_request(
-    config: State<SignerConfig>,
-    Json(request): Json<JrpcRequest<Params>>,
-) -> impl IntoResponse {
+fn fix_missing_params(original_bytes: Bytes) -> Bytes {
+    let mut value: Value = match serde_json::from_slice(&original_bytes) {
+        Ok(v) => v,
+        Err(_) => return original_bytes,
+    };
+
+    if let Value::Object(map) = &mut value {
+        if !map.contains_key("params") {
+            map.insert("params".to_string(), Value::Array(vec![]));
+        }
+    } else {
+        return original_bytes;
+    }
+
+    let fixed_bytes = match serde_json::to_vec(&value) {
+        Ok(b) => b,
+        Err(_) => return original_bytes,
+    };
+
+    Bytes::from(fixed_bytes)
+}
+
+async fn rpc_request(config: State<SignerConfig>, raw_body: Bytes) -> impl IntoResponse {
+    let fixed_bytes = fix_missing_params(raw_body);
+    let request: JrpcRequest<Params> = serde_json::from_slice(&fixed_bytes).unwrap();
+
     let response = rpc(config, request).await;
     if response.is_success() {
         (axum::http::StatusCode::OK, Json(response))
