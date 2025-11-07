@@ -86,11 +86,15 @@ pub fn init(debug: bool) {
     let fmt_layer = match debug {
         true => tracing_subscriber::fmt::layer()
             .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
             .boxed(),
         false => tracing_subscriber::fmt::layer()
             .json()
             .flatten_event(true)
             .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
             .boxed(),
     }
     .with_filter(env_filter);
